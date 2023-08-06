@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import pandas as pd
 import json
 
@@ -13,22 +13,29 @@ with open('enpointdf.json') as f:
 df_endpoint = pd.DataFrame(df)
 
 def filter_by_year(year):
-    return df_endpoint[df_endpoint['release_year'] == year]
+    #control de excepciones de Python, importando el manejo de errores de FASTAPI
+    try:
+        int_year = int(year)
+    except ValueError: 
+        raise HTTPException(400, "El año debe ser un entero.")
+    return df_endpoint[df_endpoint['release_year'] == int_year]
+
+#La función anterior, se encarga de filtrar los valores por año, ya que es algo que se utiliza en todos los endpoints.
 
 
 @app.get("/genero/{year}")
-def genero(year: int):
+def genero(year: str):
     df_filtered = filter_by_year(year)
-
     all_genres = df_filtered['genres'].tolist()
     all_genres_flat = [genre for sublist in all_genres if isinstance(sublist, list) for genre in sublist]
     genre_counts = pd.Series(all_genres_flat).value_counts(sort=True, ascending=False)
-    genres_repeat = genre_counts.index[:5]
 
-    return {genre for genre in genres_repeat}
+    genre_counts_dict = {genre: count for genre, count in list(genre_counts.items())[:5]}
+
+    return genre_counts_dict
 
 @app.get("/juegos/{year}")
-def juegos(year: int):
+def juegos(year: str):
     df_filtered = filter_by_year(year)
 
     juegos_lanzados = df_filtered['title'].tolist()
@@ -37,25 +44,25 @@ def juegos(year: int):
 
 
 @app.get("/specs/{year}")
-def specs(year:int):
+def specs(year:str):
     df_filtered = filter_by_year(year)
 
     all_specs = [spec for specs_list in df_filtered['specs'] if isinstance(specs_list, list) for spec in specs_list]
-    spec_counts = pd.Series(all_specs).value_counts(sort=True, ascending=False)
-    top_5_specs = spec_counts.index[:5].tolist()
+    top_5_specs = pd.Series(all_specs).value_counts(sort=True, ascending=False)
 
+    top_5_specs = {specs: count for specs, count in list(top_5_specs.items())[:5]}
     return top_5_specs
 
 @app.get("/earlyacces/{year}")
-def earlyacces(year:int):
+def earlyacces(year:str):
     df_filtered = filter_by_year(year)
 
     num_earlyacces = df_filtered['early_access'].sum()
 
-    return {"earlyacces": int(num_earlyacces)}
+    return {"earlyacces": str(num_earlyacces)}
 
 @app.get("/sentiment/{year}")
-def sentiment(year:int):
+def sentiment(year:str):
     df_filtered = filter_by_year(year)
 
     sentiment_counts = df_filtered['sentiment'].value_counts()
@@ -68,11 +75,12 @@ def sentiment(year:int):
     return sentiment_dict
 
 @app.get("/metascore/{year}")
-def metascore(year:int):
+def metascore(year: str):
     df_filtered = filter_by_year(year)
+    df_filtered['metascore'] = pd.to_numeric(df_filtered['metascore'], errors='coerce')
     df_sorted = df_filtered.sort_values(by='metascore', ascending=False)
-    
-    top_5_juegos = df_sorted.head(5)['title'].tolist()
+    top_5_juegos = df_sorted.head(5)[['title', 'metascore']].to_dict(orient='records')
 
     return top_5_juegos
+
     
