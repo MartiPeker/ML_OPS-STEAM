@@ -1,4 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from sklearn.metrics import mean_squared_error, r2_score
+from pydantic import BaseModel
+from typing import List
+from enum import Enum
+import joblib
 import pandas as pd
 import json
 
@@ -10,7 +15,16 @@ with open('enpointdf.json') as f:
     for line in f.readlines():
         df.append(json.loads(line))
 
+
+
 df_endpoint = pd.DataFrame(df)
+
+#modelo pred.
+modelo_entrenado = joblib.load('modelo_entrenado.pkl')
+#label encoder
+#label_encoder = joblib.load('label_encoder.pkl')
+
+GENRES_LIST = ['Action','Adventure','Casual','Early Access','Free to Play','Indie','Massively Multiplayer','RPG','Racing','Simulation','Sports','Strategy']
 
 def filter_by_year(year):
     #control de excepciones de Python, importando el manejo de errores de FASTAPI
@@ -21,6 +35,16 @@ def filter_by_year(year):
     return df_endpoint[df_endpoint['release_year'] == int_year]
 
 #La función anterior, se encarga de filtrar los valores por año, ya que es algo que se utiliza en todos los endpoints.
+
+#esto lo voy a usar para poder poner una lista de generos
+class Item(BaseModel):
+    year: str
+    genres: List[str]
+
+class ParametroOpciones(str, Enum):
+    opcion1 = "valor_opcion1"
+    opcion2 = "valor_opcion2"
+    opcion3 = "valor_opcion3"
 
 
 @app.get("/genero/{year}")
@@ -83,4 +107,30 @@ def metascore(year: str):
 
     return top_5_juegos
 
-    
+
+@app.get("/predict/")
+def predict_price(year: str, genres: str):
+    #obtengo los datos
+    genres_dict = extract_genres(genres)
+    data = {'release_year': int(year), **genres_dict}
+    df = pd.DataFrame(data, index=[0])
+
+    prediction = modelo_entrenado.predict(df)
+
+    return {"prediction": prediction[0], "RMSE": 8.194215961503977, "R2": 0.4053934917647908}
+
+def extract_genres(genres:str):
+    genres_splitted = genres.split(",")
+    genres_parsed = [genre.strip() for genre in genres_splitted]
+    genres_excluded = list(set(GENRES_LIST) - set(genres_parsed))
+    genres_included = list(set(GENRES_LIST) - set(genres_excluded))
+
+    result = {}
+
+    for genre in GENRES_LIST:
+        if genre in genres_included:
+            result[genre] = 1
+        else:
+            result[genre] = 0
+
+    return result
