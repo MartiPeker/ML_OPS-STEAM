@@ -36,7 +36,6 @@ La aplicación está desplegada en [Render](https://mlops-steam-peker.onrender.c
 Los generos con los que fue entrenado el modelo son: 'Action','Adventure','Casual','Early Access','Free to Play','Indie','Massively Multiplayer','RPG','Racing','Simulation','Sports','Strategy'
 Cualquiera de estos generos debe ser tipeado con su mayus correspondiente. (Por falta de tiempo no he llegado a optimizar esos detalles.)
 
-
 ## A continuación, adjunto el video donde muestro la funcionabilidad de la misma desde render.
 
 []
