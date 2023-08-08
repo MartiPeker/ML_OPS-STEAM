@@ -1,13 +1,14 @@
 # Proyecto ML-OPS: Predicción de Precio de Videojuegos
 
 <p align="center">
-  <img src="https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/3ec1713f-6f7b-4117-a1fc-916b63646c85" alt="logo henry">
+  <img src="![logo henry](https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/fdf55910-c40e-4c60-b4f8-336c67b5a22d)
+" alt="logo henry">
 </p>
 
 En este proyecto, llevaremos a cabo un modelo de Machine Learning utilizando un dataset público y una API lista para su consumo. La API proporciona un servicio de predicción de precio de videojuegos basado en un modelo de aprendizaje supervisado. La idea es simular el rol de un ML-Ops.
 
 <p align="center">
-  <img src="https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/2c462d80-9664-4a2d-88a0-355a4a830455" alt="MLOps">
+  <img src="![STEAM title](https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/7c4609f7-bcc7-4dc2-8296-28c25baef04e)">
 </p>
 
 ## Consignas
@@ -17,10 +18,14 @@ Las consignas están especificadas en el siguiente repositorio: [PI_ML_OPS](http
 ## Herramientas utilizadas en este proyecto:
 
 <p align="center">
-  <img src="https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/1e9324b6-a12e-4ec3-904d-fcdc5cf74529" alt="fastApi">
-  <img src="https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/f0e01e8f-7bd4-4f1e-badc-42dd82bed459" alt="pandas">
-  <img src="https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/a45ee9ac-7235-43ab-ae69-d4dd7d2f8fb5" alt="scikit-learn">
-  <img src="https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/18b0dac7-131b-48c6-b941-290e6aeb71bb" alt="render">
+  <img src="![FastAPI](https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/fb53e4a7-2100-43d8-8144-72731132164c)
+">
+  <img src="![pandas](https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/eec78aa2-2b92-445b-a571-c72b5705be46)
+">
+  <img src="![scikit-learn](https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/1f48d98e-d7e5-4c83-9db6-91cceb4fc339)
+">
+  <img src="![render](https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/f3547eeb-776d-4b05-9eda-52e1bdcb2016)
+">
 </p>
 
 ## Características
@@ -32,3 +37,15 @@ Las consignas están especificadas en el siguiente repositorio: [PI_ML_OPS](http
 ## Deploy de la App
 
 La aplicación está desplegada en [Render](https://mlops-steam-peker.onrender.com/).
+(El modelo acepta los parametros year (YYYY) y genres (si se requiere probar varios generos, puede estar separado por ",")
+Los generos con los que fue entrenado el modelo son: 'Action','Adventure','Casual','Early Access','Free to Play','Indie','Massively Multiplayer','RPG','Racing','Simulation','Sports','Strategy'
+Cualquiera de estos generos debe ser tipeado con su mayus correspondiente. (Por falta de tiempo no he llegado a optimizar esos detalles.)
+
+
+## A continuación, adjunto el video donde muestro la funcionabilidad de la misma desde render.
+
+[]
+
+Muchas gracias por ver.
+
+<img src="![nombre](https://github.com/MartiPeker/ML_OPS-STEAM/assets/83708254/98644470-f674-4445-8549-dc376239bb2f)">
