@@ -1,8 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from sklearn.metrics import mean_squared_error, r2_score
-from pydantic import BaseModel
 from typing import List
-from enum import Enum
 import joblib
 import pandas as pd
 import json
@@ -24,10 +21,12 @@ modelo_entrenado = joblib.load('modelo_entrenado.pkl')
 #label encoder
 #label_encoder = joblib.load('label_encoder.pkl')
 
+
+#tuve que hacer una función para quedarme con los valores de genres, creé esta lista puntualmente con los valores que entrene mi modelo, porque por tiempo no hallé otra manera de recorrer los valores dentro de la función
 GENRES_LIST = ['Action','Adventure','Casual','Early Access','Free to Play','Indie','Massively Multiplayer','RPG','Racing','Simulation','Sports','Strategy']
 
 def filter_by_year(year):
-    #control de excepciones de Python, importando el manejo de errores de FASTAPI
+    #control de excepciones de Python, importando el manejo de errores de FASTAPI ya que en el repositorio especificaron usar 'str' en vez de 'int'
     try:
         int_year = int(year)
     except ValueError: 
@@ -36,21 +35,12 @@ def filter_by_year(year):
 
 #La función anterior, se encarga de filtrar los valores por año, ya que es algo que se utiliza en todos los endpoints.
 
-#esto lo voy a usar para poder poner una lista de generos
-class Item(BaseModel):
-    year: str
-    genres: List[str]
-
-class ParametroOpciones(str, Enum):
-    opcion1 = "valor_opcion1"
-    opcion2 = "valor_opcion2"
-    opcion3 = "valor_opcion3"
-
 
 @app.get("/genero/{year}")
 def genero(year: str):
     df_filtered = filter_by_year(year)
     all_genres = df_filtered['genres'].tolist()
+    #una vez extraidos los generos, recorro y organizo de la siguiente manera:
     all_genres_flat = [genre for sublist in all_genres if isinstance(sublist, list) for genre in sublist]
     genre_counts = pd.Series(all_genres_flat).value_counts(sort=True, ascending=False)
 
@@ -64,7 +54,7 @@ def juegos(year: str):
 
     juegos_lanzados = df_filtered['title'].tolist()
 
-    return juegos_lanzados
+    return {"juegos":juegos_lanzados}
 
 
 @app.get("/specs/{year}")
@@ -91,6 +81,7 @@ def sentiment(year:str):
 
     sentiment_counts = df_filtered['sentiment'].value_counts()
 
+    #tuve que especificar cuales eran los valores en los que quería centrarme.
     sentiments = ['Mixed', 'Mostly Negative', 'Mostly Positive', 'Negative', 'Overwhelmingly Negative',
                   'Overwhelmingly Positive', 'Positive', 'Very Negative', 'Very Positive']
     sentiment_dict = {sentiment: sentiment_counts.get(sentiment, 0) for sentiment in sentiments}
@@ -105,12 +96,11 @@ def metascore(year: str):
     df_sorted = df_filtered.sort_values(by='metascore', ascending=False)
     top_5_juegos = df_sorted.head(5)[['title', 'metascore']].to_dict(orient='records')
 
-    return top_5_juegos
+    return {"top_5_juegos": top_5_juegos}
 
 
 @app.get("/predict/")
 def predict_price(year: str, genres: str):
-    #obtengo los datos
     genres_dict = extract_genres(genres)
     data = {'release_year': int(year), **genres_dict}
     df = pd.DataFrame(data, index=[0])
@@ -119,6 +109,8 @@ def predict_price(year: str, genres: str):
 
     return {"prediction": prediction[0], "RMSE": 8.194215961503977, "R2": 0.4053934917647908}
 
+
+#funcion que menciono más arriba cuando creo la lista con los genres.
 def extract_genres(genres:str):
     genres_splitted = genres.split(",")
     genres_parsed = [genre.strip() for genre in genres_splitted]
